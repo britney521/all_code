@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>国家药品监督管理局数据查询</title>
+    <link rel="shortcut icon" href="https://www.nmpa.gov.cn/wbppimages/favicon.ico">
+    <link rel="stylesheet" href="css/element-ui.css">
+    <link rel="stylesheet" href="css/display.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/introjs.min.css">
+    <style>
+        *[v-cloak] {
+            display: none;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        .menubtn-box {
+            padding: 0 30px;
+        }
+
+        .menubtn-box.yaopin {
+            padding-left: 0;
+        }
+
+        .menubtn-box.qita {
+            padding-right: 0;
+        }
+
+        .search-result-menubtn {
+            height: 56px;
+            padding-left: 84px;
+            margin-top: 38px;
+        }
+
+        .search-result-menubtn i {
+            float: left;
+            width: 84px;
+            height: 56px;
+            color: #fff;
+            text-align: center;
+            line-height: 56px;
+            font-size: 30px;
+            font-weight: bold;
+            margin-left: -84px;
+        }
+
+        .search-result-menubtn span {
+            border-width: 2px;
+            border-style: solid;
+            border-left: none;
+            float: left;
+            text-align: center;
+            width: 100%;
+            height: 52px;
+            line-height: 52px;
+            font-size: 24px;
+        }
+
+        .nodata {
+            line-height: 30px;
+            padding-top: 10px;
+        }
+
+        .yaopin .search-result-menubtn i {
+            background: #72d8f7;
+        }
+
+        .yaopin .search-result-menubtn span {
+            border-color: #5cd0f6;
+            color: #5cd0f6;
+        }
+
+        .yaopin .search-result-menubtn.active span {
+            background: #5cd0f6;
+            color: #fff;
+        }
+
+        .yiliaoqixie .search-result-menubtn i {
+            background: #43e0b4;
+        }
+
+        .yiliaoqixie .search-result-menubtn span {
+            border-color: #2cd9a6;
+            color: #2cd9a6;
+        }
+
+        .yiliaoqixie .search-result-menubtn.active span {
+            background: #2cd9a6;
+            color: #fff;
+        }
+
+        .huazhuangpin .search-result-menubtn i {
+            background: #ffaa84;
+        }
+
+        .huazhuangpin .search-result-menubtn span {
+            border-color: #ff9a6f;
+            color: #ff9a6f;
+        }
+
+        .huazhuangpin .search-result-menubtn.active span {
+            background: #ff9a6f;
+            color: #fff;
+        }
+
+        .qita .search-result-menubtn i {
+            background: #cabfe2;
+        }
+
+        .qita .search-result-menubtn span {
+            border-color: #bfb2dc;
+            color: #bfb2dc;
+        }
+
+        .qita .search-result-menubtn.active span {
+            background: #bfb2dc;
+            color: #fff;
+        }
+
+        /* .search-input{
+                padding: 32px 270px 0;
+            } */
+        .search-input .el-input-group__append,
+        .search-input .el-input-group__prepend {
+            background: #0061c3;
+            color: #fff;
+            border: 1px solid #0061c3;
+        }
+
+        .search-input .el-icon-search {
+            font-size: 20px;
+        }
+
+        .search-result-keywordbox {
+            width: 1200px;
+            height: auto;
+        }
+
+        .search-result-table {
+            min-height: 300px;
+        }
+
+        .search-result-keywordbox h2.title,
+        .search-result-table h2.title {
+            font-weight: normal;
+            color: #333;
+            font-size: 14px;
+            padding: 15px 0;
+        }
+
+        .search-result-keywordbox .list-box {
+            padding-left: 10px;
+            padding-bottom: 10px;
+            background: #f9f9f9;
+            border: 1px solid #dadada;
+        }
+
+        .search-result-eltag {
+            margin: 6px 10px 0px 0;
+            font-size: 14px;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .search-result-eltag.active {
+            background: #0061c3;
+            color: #fff;
+        }
+
+        .search-result-eltag .nums {
+            color: red;
+        }
+
+        .search-result-eltag.active .nums {
+            color: #fff;
+        }
+
+        .table-box {
+            width: 1200px;
+            margin: 0 auto;
+            border-top: 2px solid #0061c3;
+        }
+
+        .table-box i.el-shoucang {
+            font-size: 26px;
+        }
+
+        .table-box i.el-icon-xin {
+            color: #666;
+        }
+
+        .table-box i.el-icon-xin1 {
+            color: #ffb000;
+        }
+
+        .table-box .el-table--striped .el-table__body tr.el-table__row--striped td {
+            background: #f8fbff;
+        }
+
+        .table-box .el-table--mini,
+        .el-table--small,
+        .table-box .el-table__expand-icon {
+            font-size: 14px;
+        }
+
+        .page {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .footer-top-line {
+            border-top: none;
+            margin-top: 30px;
+            padding-bottom: 20px;
+        }
+
+
+        .el-cascader__tags {
+            flex-wrap: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 小屏幕高级查询按钮默认隐藏 */
+        .phone_advanced_search_btn {
+            display: none;
+        }
+
+        /* xs < 768px */
+        @media screen and (max-width: 768px) {
+            /* 小屏幕，模块选择下拉选调整位置 */
+            .mycascader {
+                left: -35px !important;
+            }
+
+            /* 小屏幕高级查询按钮展示 */
+            .phone_advanced_search_btn {
+                display: block !important
+            }
+
+            .menubtn-box {
+                padding: 0 10px;
+            }
+
+            .menubtn-box.yaopin {
+                padding-left: 10px;
+            }
+
+            .menubtn-box.qita {
+                padding-right: 10px;
+            }
+
+            .search-result-menubtn {
+                margin-top: 10px;
+            }
+
+            .search-result-menubtn {
+                height: 46px;
+                overflow: hidden;
+                padding-left: 60px;
+            }
+
+            .search-result-menubtn i {
+                font-size: 20px;
+                height: 46px;
+                line-height: 46px;
+                width: 60px;
+                margin-left: -60px;
+            }
+
+            .search-result-menubtn span {
+                font-size: 18px;
+                height: 46px;
+                line-height: 46px;
+                box-sizing: border-box;
+            }
+
+            .search-input {
+                padding: 10px 10px 0;
+            }
+
+            .search-result-keywordbox {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .search-result-keywordbox h2.title,
+            .search-result-table h2.title {
+                font-size: 16px;
+                padding: 10px 10px;
+            }
+
+            .search-result-keywordbox .list-box {
+                margin: 0 10px;
+                padding-left: 10px;
+                padding-bottom: 6px;
+            }
+
+            .search-result-eltag {
+                margin-top: 10px;
+                margin-right: 10px;
+            }
+
+            .table-box {
+                width: 100%;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+
+            .table-box .el-table--mini,
+            .el-table--small,
+            .table-box .el-table__expand-icon {
+                font-size: 12px;
+            }
+
+            .page {
+                padding: 10px;
+                box-sizing: border-box;
+            }
+        }
+
+        .table-box i.el-icon-xin {
+            color: #fff;
+        }
+
+        .search-result-keywordbox {
+            margin-top: 10px;
+        }
+
+        .search-result-keywordbox .el-collapse-item__header {
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .demo-drawer__footer {
+            display: flex;
+        }
+
+        .demo-drawer__footer button {
+            flex: 1;
+        }
+
+        .gaoji-drawer .el-drawer {
+            overflow: auto;
+        }
+
+        .gaoji-box {
+            padding: 20px;
+        }
+
+        .gaoji-bai {
+            width: 100%;
+        }
+
+        .search-result-eltag.active:hover {
+            background: #0061c3;
+            color: #fff;
+        }
+
+        .el-button--mini,
+        .el-button--small {
+            font-size: 14px;
+        }
+
+        .search-input {
+            position: relative;
+            width: 100%;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sousuo {
+            display: inline-block;
+        }
+
+        .putongsousuo {
+            width: 450px;
+        }
+
+        .gaojisousuo {
+            padding-left: 20px;
+
+        }
+
+        .fuhechaxun {
+            position: absolute;
+            right: 0;
+        }
+
+        .el-table td,
+        .el-table th {
+            padding: 7px 0;
+        }
+
+        .el-collapse-item__header {
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .myselselect .el-select .el-input {
+            width: 90px;
+            border: 1px solid #DCDFE6;
+        }
+
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .mycascader .el-cascader-panel .el-scrollbar:first-child .el-checkbox {
+            display: none;
+        }
+
+        .mycascader .el-cascader-panel .el-checkbox {
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            position: absolute;
+            top: 0px;
+            /* margin-right: 10px; */
+            /* right: 10px; */
+        }
+
+        .mycascader .el-cascader-node__label {
+            margin-left: 10px;
+        }
+
+        /* 这个样式针对IE有用，不考虑IE的可以不用管*/
+        .mycascader .el-cascader-panel .el-cascader-node__postfix {
+            top: 10px;
+        }
+
+        .el-cascader__tags .el-tag > span {
+            -webkit-box-flex: auto;
+            flex: auto;
+        }
+
+        .mycascader .el-cascader-panel .el-checkbox {
+            /* width: 100%;
+                  height: 100%;
+                  z-index: 10;
+                  position: absolute;*/
+        }
+
+        .mycascader .el-cascader-node__label {
+            /*margin-left: 10px;*/
+        }
+
+        .mycascader .el-cascader-panel .el-cascader-node__postfix {
+            /*top: 10px;*/
+        }
+
+        /* .in-active-path  .el-checkbox{
+                display:none
+             } */
+    </style>
+    <style type="text/css">
+        @media all and (-ms-high-contrast: none),
+        (-ms-high-contrast: active) {
+
+            /* IE10+ CSS styles go here */
+            .sousuo {
+                display: inline-block;
+                margin-top: 5px;
+            }
+
+            .search-result-keywordbox .list-box {
+                padding-left: 10px;
+                padding-bottom: 6px;
+                padding-top: 6px;
+                background: #f9f9f9;
+                border: 1px solid #dadada;
+            }
+
+            .search-result-eltag {
+                margin: 6px 10px 0px 0;
+                font-size: 14px;
+                color: #000;
+                cursor: pointer;
+            }
+
+        }
+    </style>
+
+
+    <!--[if lt IE 9]>
+    <script r='m'>document.createElement("section")</script><![endif]--></head>
+
+<body class="root">
+<div id="home">
+    <div class="header-main">
+        <div class="el-row">
+            <div class="el-col el-col-24">
+                <div class="header clearfix">
+                    <div class="pc-max">
+                        <div class="logo f-fl"><a href="#"><img src="./images/logo.png" alt=""></a></div>
+                        <h1 class="logo-text f-fl"><a href="javascript:;"><img src="./images/sublogo.png" alt=""></a>
+                        </h1></div>
+                    <div class="phone-sm">
+                        <div class="logo f-fl"><a href="javascript:;" style="float: left; width: 320px;"><img
+                                src="./images/logo.png" alt=""></a>
+                            <div class="el-icon-menu"
+                                 style="float: right; color: rgb(0, 97, 195); padding-right: 4px; line-height: 120px; font-size: 28px;"></div>
+                        </div>
+                    </div>
+                    <div class="header-nav f-fr hidden-xs-only"><a href="javascript:;"><i
+                            class="el-icon-s-home"></i><br> <span><a class="el-link el-link--default is-underline"
+                                                                     style="margin-right: 0px;"><!----><span
+                            class="el-link--inner">首页</span><!----></a></span></a> <a href="javascript:;"><i
+                            class="el-icon-s-custom"></i><br> <span><a class="el-link el-link--default is-underline"
+                                                                       style="margin-right: 0px;"><!----><span
+                            class="el-link--inner">政务服务门户</span><!----></a></span></a> <!----> <!----> <!---->
+                        <!----> <a href="javascript:;"><i class="el-icon-s-opportunity"></i><br> <span><a
+                                class="el-link el-link--default is-underline" style="margin-right: 0px;"><!----><span
+                                class="el-link--inner">使用提示</span><!----></a></span></a></div>
+                    <div class="xs-header-nav f-fr hidden-sm-and-up" style="padding-top: 100px;">
+                        <div class="xs-header-navbox" style="height: 135px; display: none;">
+                            <ul>
+                                <li><a href="#" class="clearfix"><i class="el-icon-s-home"></i> <span
+                                        style="color: rgb(51, 51, 51);">首页</span></a></li>
+                                <li><a href="javascript:;" class="clearfix"><i class="el-icon-s-custom"></i> <span
+                                        style="color: rgb(51, 51, 51);">政务服务门户</span></a></li> <!----> <!---->
+                                <!----> <!----></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-bottom-line"></div>
+    <div class="container">
+        <div>
+            <div class="search-input myselselect">
+                <div class="el-cascader el-cascader--medium" data-step="3" data-intro="支持多个数据库复合查询，至多3个"
+                     data-position="bottom" multiple-limit="3" only-last="true" expandtrigger="click"
+                     style="line-height: 40px;">
+                    <div class="el-input el-input--medium el-input--suffix"><!----><input type="text"
+                                                                                          readonly="readonly"
+                                                                                          autocomplete="off"
+                                                                                          placeholder="请选择"
+                                                                                          class="el-input__inner"
+                                                                                          style="height: 40px;">
+                        <!----><span class="el-input__suffix"><span class="el-input__suffix-inner"><i
+                                class="el-input__icon el-icon-arrow-down"></i><!----><!----><!----><!----></span><!----></span>
+                        <!----><!----></div>
+                    <div class="el-cascader__tags"><span class="el-tag el-tag--info el-tag--small el-tag--light"><span>国产特殊化妆品注册信息</span><i
+                            class="el-tag__close el-icon-close"></i></span><!----></div>
+                </div>
+                <div class="sousuo putongsousuo">
+                    <div class="input-with-select el-input el-input-group el-input-group--append"><!----><input
+                            type="text" autocomplete="off"
+                            placeholder="请输入产品名称中文 / 产品类别 / 注册人中文 / 注册证号 / 批件状态查询"
+                            class="el-input__inner"><!----><!---->
+                        <div class="el-input-group__append">
+                            <button type="button" class="el-button el-button--default"><!----><i
+                                    class="el-icon-search"></i><!----></button>
+                        </div><!----></div>
+                </div>
+                <div class="phone_advanced_search_btn" style="width: 120px;"><a
+                        class="el-link el-link--primary is-underline"><i class="el-icon-s-operation"></i><span
+                        class="el-link--inner">高级搜索</span><!----></a></div>
+                <div data-step="4" data-intro="点击进行高级搜索" data-position="bottom"
+                     class="sousuo gaojisousuo pc-max"><a class="el-link el-link--primary is-underline"><i
+                        class="el-icon-s-operation"></i><span class="el-link--inner">高级搜索</span><!----></a></div>
+            </div>
+            <div class="search-result-keywordbox">
+                <div class="list-box"><i class="el-icon-s-grid"></i>搜索结果：
+                    <span data-step="1" data-intro="所选数据库名称" data-position="top"><div role="tooltip"
+                                                                                             id="el-popover-5693"
+                                                                                             aria-hidden="true"
+                                                                                             class="el-popover el-popper"
+                                                                                             tabindex="0"
+                                                                                             style="width: 500px; display: none;"><div
+                            class="el-popover__title">信息提示：国产特殊化妆品注册信息</div><div
+                            class="el-divider el-divider--horizontal"><!----></div> <div><p><span
+                            style="color: rgb(85, 102, 127); font-family: &quot;Microsoft YaHei&quot;, simsun, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 12px; background-color: rgb(255, 255, 255);">1.批件状态说明：“当前”表示此产品的批件为最新的有效批件，“历史”表示此产品的曾用批件，“过期”表示此产品的批件已经过期，“注销”表示此产品的批件已被注销。此产品批件信息不作为执法依据。</span></p></div>
+                        <!----> </div><span class="el-popover__reference-wrapper"><span
+                            class="el-button el-button--default el-button--mini search-result-eltag active el-tag el-tag--light el-popover__reference"
+                            aria-describedby="el-popover-5693" tabindex="0">国产特殊化妆品注册信息
+                <i class="el-tag__close el-icon-close"></i></span></span></span> <!----></div>
+            </div>
+        </div>
+        <div class="search-result-table"
+             style="background: url(&quot;./images/bg_home.png&quot;) 0% 0% / 400px 140px rgba(220, 231, 255, 0.15); padding-top: 10px;">
+            <div data-step="2" data-intro="查询结果列表，可点击右侧按钮查看详情" data-position="top" class="table-box"
+                 style="width: 100%;">
+                <div class="el-table el-table--fit el-table--striped el-table--border el-table--enable-row-hover el-table--enable-row-transition"
+                     element-loading-text="数据正在加载中..." element-loading-spinner="el-icon-loading"
+                     min-block-size="400px">
+                    <div class="hidden-columns"> <!---->    <!----></div>
+                    <div class="el-table__header-wrapper">
+                        <table cellspacing="0" cellpadding="0" border="0" class="el-table__header">
+                            <colgroup>
+                                <col name="gutter" width="0">
+                            </colgroup>
+                            <thead class="has-gutter">
+                            <tr class="">
+                                <th class="gutter" style="width: 0px; display: none;"></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="el-table__body-wrapper is-scrolling-none">
+                        <table cellspacing="0" cellpadding="0" border="0" class="el-table__body">
+                            <colgroup></colgroup>
+                            <tbody>
+                            <tr class="el-table__row"></tr>
+                            <tr class="el-table__row el-table__row--striped"></tr>
+                            <tr class="el-table__row"></tr>
+                            <tr class="el-table__row el-table__row--striped"></tr>
+                            <tr class="el-table__row"></tr>
+                            <tr class="el-table__row el-table__row--striped"></tr>
+                            <tr class="el-table__row"></tr>
+                            <tr class="el-table__row el-table__row--striped"></tr>
+                            <tr class="el-table__row"></tr>
+                            <tr class="el-table__row el-table__row--striped"></tr><!----></tbody>
+                        </table><!----><!----></div><!----><!----><!----><!---->
+                    <div class="el-table__column-resize-proxy" style="display: none;"></div>
+                    <div class="el-loading-mask el-loading-fade-leave-active el-loading-fade-leave-to" style="">
+                        <div class="el-loading-spinner"><i class="el-icon-loading"></i>
+                            <p class="el-loading-text">数据正在加载中...</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page pc-max"
+             style="background: url(&quot;./images/bg_home.png&quot;) 0% 0% / 400px 140px rgba(220, 231, 255, 0.15);">
+            <div style="display: flex !important; place-content: space-between center; align-items: center;"><span><a
+                    href="search-help.html#fysm" target="_blank" style="text-decoration: none;">说明</a></span>
+                <div class="el-pagination is-background">
+                    <button type="button" disabled="disabled" class="btn-prev"><i
+                            class="el-icon el-icon-arrow-left"></i></button>
+                    <ul class="el-pager">
+                        <li class="number active">1</li><!---->
+                        <li class="number">2</li>
+                        <li class="number">3</li>
+                        <li class="number">4</li>
+                        <li class="number">5</li>
+                        <li class="number">6</li>
+                        <li class="el-icon more btn-quicknext el-icon-more"></li>
+                        <li class="number">1450</li>
+                    </ul>
+                    <button type="button" class="btn-next"><i class="el-icon el-icon-arrow-right"></i></button>
+                    <span class="el-pagination__total">共 14495 条</span><span class="el-pagination__sizes"><div
+                        class="el-select el-select--mini"><!----><div class="el-input el-input--mini el-input--suffix"><!----><input
+                        type="text" readonly="readonly" autocomplete="off" placeholder="请选择" class="el-input__inner">
+                    <!----><span class="el-input__suffix"><span class="el-input__suffix-inner"><i
+                            class="el-select__caret el-input__icon el-icon-arrow-up"></i><!----><!----><!----><!---->
+                        <!----></span><!----></span><!----><!----></div><div class="el-select-dropdown el-popper"
+                                                                             style="display: none; min-width: 110px;"><div
+                        class="el-scrollbar" style=""><div class="el-select-dropdown__wrap el-scrollbar__wrap"
+                                                           style="margin-bottom: -6px; margin-right: -6px;"><ul
+                        class="el-scrollbar__view el-select-dropdown__list"><!----><li
+                        class="el-select-dropdown__item selected"><span>10条/页</span></li><li
+                        class="el-select-dropdown__item"><span>20条/页</span></li></ul></div><div
+                        class="el-scrollbar__bar is-horizontal"><div class="el-scrollbar__thumb"
+                                                                     style="transform: translateX(0%);"></div></div><div
+                        class="el-scrollbar__bar is-vertical"><div class="el-scrollbar__thumb"
+                                                                   style="transform: translateY(0%);"></div></div></div>
+                    <!----></div></div></span><span class="el-pagination__jump">前往<div
+                        class="el-input el-pagination__editor is-in-pagination"><!----><input type="number"
+                                                                                              autocomplete="off" min="1"
+                                                                                              max="1450"
+                                                                                              class="el-input__inner">
+                    <!----><!----><!----><!----></div>页</span></div>
+            </div>
+        </div>
+        <div class="page phone-sm"
+             style="background: url(&quot;./images/bg_home.png&quot;) 0% 0% / 400px 140px rgba(220, 231, 255, 0.15);">
+            <div style="display: flex !important; place-content: space-between center; align-items: center;"><span><a
+                    href="search-help.html#fysm" target="_blank" style="text-decoration: none;">说明</a></span>
+                <div class="el-pagination is-background">
+                    <button type="button" disabled="disabled" class="btn-prev"><i
+                            class="el-icon el-icon-arrow-left"></i></button>
+                    <button type="button" class="btn-next"><i class="el-icon el-icon-arrow-right"></i></button>
+                    <span class="el-pagination__total">共 14495 条</span></div>
+            </div>
+        </div>
+    </div>
+    <div tabindex="-1" class="el-drawer__wrapper gaoji-drawer" style="display: none;">
+        <div role="document" tabindex="-1" class="el-drawer__container">
+            <div aria-modal="true" aria-labelledby="el-drawer__title" aria-label="高级搜索" role="dialog" tabindex="-1"
+                 class="el-drawer ltr my-drawer" style="width: 30%;">
+                <header id="el-drawer__title" class="el-drawer__header"><span role="heading"
+                                                                              title="高级搜索">高级搜索</span>
+                    <button aria-label="close 高级搜索" type="button" class="el-drawer__close-btn"><i
+                            class="el-dialog__close el-icon el-icon-close"></i></button>
+                </header><!----></div>
+        </div>
+    </div>
+    <div class="el-dialog__wrapper" style="display: none;">
+        <div role="dialog" aria-modal="true" aria-label="基本信息" class="el-dialog"
+             style="margin-top: 5vh; width: 65%;">
+            <div class="el-dialog__header"><span class="el-dialog__title">基本信息</span>
+                <button type="button" aria-label="Close" class="el-dialog__headerbtn"><i
+                        class="el-dialog__close el-icon el-icon-close"></i></button>
+            </div><!----><!----></div>
+    </div>
+    <div class="header-bottom-line footer-top-line"></div>
+    <div class="footer">
+        <div class="footer-container hidden-xs-only clearfix">
+            <div class="about f-fl">
+                <div>本站由国家药品监督管理局主办 版权所有：国家药品监督管理局</div>
+                <div>Copyright © NMPA All Rights Reserved</div>
+                <div><span class="p8">网站标识码bm35000001</span> <a href="http://www.beian.miit.gov.cn/"
+                                                                     target="_blank"
+                                                                     class="p8">备案序号:京ICP备13027807号</a> <a
+                        href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010202008311"
+                        target="_blank" class="beian">京公网安备11010202008311号</a></div>
+                <div>
+                    地址：北京市西城区展览路北露园1号 | 邮编：100037
+                </div>
+            </div>
+            <div style="float: left;"><a
+                    href="http://bszs.conac.cn/sitename?method=show&amp;id=7A8439F78D616CC8E05310291AACA486"
+                    target="_blank"><img src="https://www.nmpa.gov.cn/wbppimages/red.png" alt=""></a></div>
+            <div id="footer-jiucuo" style="float: left; margin-top: 10px; margin-left: 10px;"><a
+                    href="https://zfwzgl.www.gov.cn/exposure/jiucuo.html?site_code=bm35000001&amp;url=https%3A%2F%2Fwww.nmpa.gov.cn%2F"
+                    target="_blank"><img src="https://zfwzgl.www.gov.cn/exposure/images/jiucuo.png" alt=""></a></div>
+            <div class="footer_wuzhangai" style="float: left; margin-top: 10px; margin-left: 20px;"><img
+                    src="https://www.nmpa.gov.cn/wbppimages/wuzhangailogo.png"></div>
+        </div>
+        <div class="footer-info hidden-sm-and-up">
+            <div class="footer-text" style="margin: 0px auto; display: table;">
+                本站由国家药品监督管理局主办<br>
+                版权所有：国家药品监督管理局<br>
+                网站标识码bm35000001<br> <a href="http://www.beian.miit.gov.cn/" target="_blank"
+                                            style="color: rgb(102, 102, 102);">备案序号:京ICP备13027807号</a> <br></div>
+            <div id="app-logo">
+                <div class="footer-redimg" style="float: left;"><a
+                        href="http://bszs.conac.cn/sitename?method=show&amp;id=7A8439F78D616CC8E05310291AACA486"
+                        target="_blank"><img src="https://www.nmpa.gov.cn/wbppimages/red.png" alt=""></a></div>
+                <div class="footer_jiucuo" style="float: left; margin-top: 20px;"><a
+                        href="https://zfwzgl.www.gov.cn/exposure/jiucuo.html?site_code=bm35000001&amp;url=https%3A%2F%2Fwww.nmpa.gov.cn%2F"
+                        target="_blank"><img src="https://zfwzgl.www.gov.cn/exposure/images/jiucuo.png" alt=""></a>
+                </div>
+                <div class="footer_wuzhangai" style="float: left; margin-top: 20px; margin-left: 10px;"><img
+                        src="https://www.nmpa.gov.cn/wbppimages/wuzhangailogo.png"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/httpVueLoader.js"></script>
+<script src="js/polyfill.min.js"></script>
+<script src="js/vue-2.6.0.js"></script>
+<script src="js/element-ui.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script src="js/intro.min.js"></script>
+<script src="js/base64.js"></script>
+<script src="js/md5.js"></script>
+<script src="js/axios.min.js"></script>
+
+<script src="js/ajax.js"></script>
+<script src="js/api.js"></script>
+<script src="js/util.js"></script>
+
+<script src="js/print.min.js"></script>
+
+<script src="js/index/search-result.js?version=v4"></script>
+<div class="van-overlay" id="p-loading">
+    <div class="spinner"></div>
+</div>
+<div class="el-popper el-cascader__dropdown mycascader"
+     style="display: none; position: absolute; top: 188px; left: 382px; z-index: 2003;" x-placement="bottom-start">
+    <div class="el-cascader-panel">
+        <div class="el-scrollbar el-cascader-menu" role="menu" id="cascader-menu-3783-0">
+            <div class="el-cascader-menu__wrap el-scrollbar__wrap" style="margin-bottom: -6px; margin-right: -6px;">
+                <ul class="el-scrollbar__view el-cascader-menu__list">
+                    <li role="menuitem" id="cascader-menu-3783-0-0" tabindex="-1" class="el-cascader-node"
+                        aria-haspopup="true" aria-owns="cascader-menu-3783-0"><label class="el-checkbox"><span
+                            class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox"
+                                                                                                      aria-hidden="false"
+                                                                                                      class="el-checkbox__original"
+                                                                                                      value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>药品</span></span><i
+                            class="el-icon-arrow-right el-cascader-node__postfix"></i></li>
+                    <li role="menuitem" id="cascader-menu-3783-0-1" tabindex="-1" class="el-cascader-node"
+                        aria-haspopup="true" aria-owns="cascader-menu-3783-0"><label class="el-checkbox"><span
+                            class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox"
+                                                                                                      aria-hidden="false"
+                                                                                                      class="el-checkbox__original"
+                                                                                                      value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>医疗器械</span></span><i
+                            class="el-icon-arrow-right el-cascader-node__postfix"></i></li>
+                    <li role="menuitem" id="cascader-menu-3783-0-2" aria-expanded="true" tabindex="-1"
+                        class="el-cascader-node in-active-path" aria-haspopup="true" aria-owns="cascader-menu-3783-0">
+                        <label class="el-checkbox" aria-controls="undefined"><span tabindex="0" role="checkbox"
+                                                                                   aria-checked="mixed"
+                                                                                   class="el-checkbox__input is-indeterminate"><span
+                                class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="true"
+                                                                         class="el-checkbox__original" value=""></span>
+                            <!----></label><span class="el-cascader-node__label"><span>化妆品</span></span><i
+                            class="el-icon-arrow-right el-cascader-node__postfix"></i></li>
+                    <li role="menuitem" id="cascader-menu-3783-0-3" tabindex="-1" class="el-cascader-node"
+                        aria-haspopup="true" aria-owns="cascader-menu-3783-0"><label class="el-checkbox"><span
+                            class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox"
+                                                                                                      aria-hidden="false"
+                                                                                                      class="el-checkbox__original"
+                                                                                                      value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>其它</span></span><i
+                            class="el-icon-arrow-right el-cascader-node__postfix"></i></li>
+                </ul>
+            </div>
+            <div class="el-scrollbar__bar is-horizontal">
+                <div class="el-scrollbar__thumb" style="transform: translateX(0%);"></div>
+            </div>
+            <div class="el-scrollbar__bar is-vertical">
+                <div class="el-scrollbar__thumb" style="transform: translateY(0%);"></div>
+            </div>
+        </div>
+        <div class="el-scrollbar el-cascader-menu" role="menu" id="cascader-menu-4865-1">
+            <div class="el-cascader-menu__wrap el-scrollbar__wrap" style="margin-bottom: -6px; margin-right: -6px;">
+                <ul class="el-scrollbar__view el-cascader-menu__list">
+                    <li role="menuitem" id="cascader-menu-4865-1-0" tabindex="-1" class="el-cascader-node is-active">
+                        <label class="el-checkbox is-checked"><span class="el-checkbox__input is-checked"><span
+                                class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                         class="el-checkbox__original" value=""></span>
+                            <!----></label><span
+                            class="el-cascader-node__label"><span>国产特殊化妆品注册信息</span></span></li>
+                    <li role="menuitem" id="cascader-menu-4865-1-1" tabindex="-1" class="el-cascader-node"><label
+                            class="el-checkbox"><span class="el-checkbox__input"><span
+                            class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                     class="el-checkbox__original" value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>进口特殊化妆品注册信息</span></span>
+                    </li>
+                    <li role="menuitem" id="cascader-menu-4865-1-2" tabindex="-1" class="el-cascader-node"><label
+                            class="el-checkbox"><span class="el-checkbox__input"><span
+                            class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                     class="el-checkbox__original" value=""></span>
+                        <!----></label><span
+                            class="el-cascader-node__label"><span>进口化妆品(《化妆品监督管理条例》实施以前批准)</span></span>
+                    </li>
+                    <li role="menuitem" id="cascader-menu-4865-1-3" tabindex="-1" class="el-cascader-node"><label
+                            class="el-checkbox"><span class="el-checkbox__input"><span
+                            class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                     class="el-checkbox__original" value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>化妆品新原料注册信息</span></span>
+                    </li>
+                    <li role="menuitem" id="cascader-menu-4865-1-4" tabindex="-1" class="el-cascader-node"><label
+                            class="el-checkbox"><span class="el-checkbox__input"><span
+                            class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                     class="el-checkbox__original" value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>化妆品新原料备案信息</span></span>
+                    </li>
+                    <li role="menuitem" id="cascader-menu-4865-1-5" tabindex="-1" class="el-cascader-node"><label
+                            class="el-checkbox"><span class="el-checkbox__input"><span
+                            class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                     class="el-checkbox__original" value=""></span>
+                        <!----></label><span
+                            class="el-cascader-node__label"><span>化妆品注册和备案检验检测机构</span></span></li>
+                    <li role="menuitem" id="cascader-menu-4865-1-6" tabindex="-1" class="el-cascader-node"><label
+                            class="el-checkbox"><span class="el-checkbox__input"><span
+                            class="el-checkbox__inner"></span><input type="checkbox" aria-hidden="false"
+                                                                     class="el-checkbox__original" value=""></span>
+                        <!----></label><span class="el-cascader-node__label"><span>化妆品生产企业</span></span></li>
+                </ul>
+            </div>
+            <div class="el-scrollbar__bar is-horizontal">
+                <div class="el-scrollbar__thumb" style="transform: translateX(0%);"></div>
+            </div>
+            <div class="el-scrollbar__bar is-vertical">
+                <div class="el-scrollbar__thumb" style="transform: translateY(0%);"></div>
+            </div>
+        </div>
+    </div><!---->
+    <div x-arrow="" class="popper__arrow" style="left: 35px;"></div>
+</div>
+
+</body>
+</html>

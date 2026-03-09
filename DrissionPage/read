@@ -1,0 +1,134 @@
+# 根据属性查找，@ 后面可跟任意属性
+page.ele('@id:ele_id', timeout=2)  # 查找 id 为 ele_id 的元素，设置等待时间2秒
+page.eles('@class')  # 查找所有拥有 class 属性的元素
+page.eles('@class:class_name')  # 查找所有 class 含有 ele_class 的元素
+page.eles('@class=class_name')  # 查找所有 class 等于 ele_class 的元素
+
+# 根据 class 或 id 查找
+page.ele('#ele_id')  # 等价于 page.ele('@id=ele_id')
+page.ele('#:ele_id')  # 等价于 page.ele('@id:ele_id')
+page.ele('.ele_class')  # 等价于 page.ele('@class=ele_class')
+page.ele('.:ele_class')  # 等价于 page.ele('@class:ele_class')
+
+# 根据 tag name 查找
+page.ele('tag:li')  # 查找第一个 li 元素
+page.eles('tag:li')  # 查找所有 li 元素
+
+# 根据 tag name 及属性查找
+page.ele('tag:div@class=div_class')  # 查找 class 为 div_class 的 div 元素
+page.ele('tag:div@class:ele_class') # 查找 class 含有 ele_class 的 div 元素
+page.ele('tag:div@class=ele_class') # 查找 class 等于 ele_class 的 div 元素
+page.ele('tag:div@text():search_text') # 查找文本含有 search_text 的 div 元素
+page.ele('tag:div@text()=search_text') # 查找文本等于 search_text 的 div 元素
+
+# 根据文本内容查找
+page.ele('search text')  # 查找包含传入文本的元素
+page.eles('text:search text')  # 如文本以 @、tag:、css:、xpath:、text: 开头，则应在前加上 text: 避免冲突
+page.eles('text=search text')  # 文本等于 search_text 的元素
+
+# 根据 xpath 或 css selector 查找
+page.eles('xpath://div[@class="ele_class"]')
+page.eles('css:div.ele_class')
+
+# 根据 loc 查找
+loc1 = By.ID, 'ele_id'
+loc2 = By.XPATH, '//div[@class="ele_class"]'
+page.ele(loc1)
+page.ele(loc2)
+
+# 查找下级元素
+element = page.ele('@id:ele_id')
+element.ele('@class:class_name')  # 在 element 下级查找第一个 class 为 ele_class 的元素
+element.eles('tag:li')  # 在 ele_id 下级查找所有li元素
+
+# 根据位置查找
+element.parent  # 父元素
+element.next  # 下一个兄弟元素
+element.prev  # 上一个兄弟元素
+
+# 获取 shadow-root，把它作为元素对待。只支持 open 的 shadow-root
+ele1 = element.shadow_root.ele('tag:div')
+
+# 串连查找
+page.ele('@id:ele_id').ele('tag:div').next.ele('some text').eles('tag:a')
+
+# 简化写法
+eles = page('@id:ele_id')('tag:div').next('some text').eles('tag:a')
+ele2 = ele1('tag:li').next('some text')
+
+
+html	此属性返回元素的 outerHTML 文本（不包括<iframe>内容）
+inner_html	此属性返回元素的 innerHTML 文本
+tag	此属性返回元素的标签名
+text	此属性返回元素内所有文本组合成的字符串
+raw_text	此属性返回元素内原始文本
+texts()	此方法返回元素内所有直接子节点的文本，包括元素和文本节点
+comments	此属性以列表形式返回元素内的注释
+attrs	此属性以字典形式返回元素所有属性及值
+attr()	此方法返回元素某个 attribute 属性值
+link	此方法返回元素的 href 属性或 src 属性
+page	此属性返回元素所在的总控页面对象
+xpath	此属性返回当前元素在页面中 xpath 的绝对路径
+css_path	此属性返回当前元素在页面中 css selector 的绝对路径
+
+
+
+# 创建页面对象
+tab = Chromium().latest_tab
+
+# 鼠标移动到<input>元素上
+tab.actions.move_to('tag:input',offset_x='',offset_y='')
+# 点击鼠标，使光标落到元素中
+tab.actions.click()
+# 按下 ctrl 键
+tab.actions.key_down(Keys.CTRL)
+# 输入 a
+tab.actions.type('a')
+# 提起 ctrl 键
+tab.actions.key_up(Keys.CTRL)
+
+
+链式写法：
+tab.actions.click('tag:input').key_down(Keys.CTRL).type('a').key_up(Keys.CTRL)
+
+把一个元素拖拽到另一个元素上：
+tab.actions.hold('#div1').release('#div2')
+
+此方法用于滚动到元素底部，水平位置不变。
+tab.scroll.scroll.to_bottom()
+此方法用于滚动到元素垂直中间位置，水平位置不变。
+tab.scroll.scroll.to_half()
+
+此方法用于滚动到元素最右边，垂直位置不变。
+scroll.to_rightmost()
+
+此方法用于滚动到元素滚动到指定位置
+scroll.to_location()
+
+此方法用于滚动页面直到元素可见。
+scroll.to_see()
+
+此方法用于尽量把元素滚动到视口正中。
+scroll.to_center()
+
+
+1、设置无头模式：co.headless(True)
+2、设置无痕模式：co.incognito(True)
+3、设置访客模式：co.set_argument('--guest')
+4、设置请求头user-agent：co.set_user_agent()
+5、设置指定端口号：co.set_local_port(9211)
+
+co = ChromiumOptions()
+co.set_argument('--start-maximized')
+co.set_argument('--disable-infobars')
+co.set_argument('--disable-extensions')
+co.set_argument('--disable-gpu')
+co.set_argument('--disable-dev-shm-usage')
+co.set_argument('--no-sandbox')
+co.set_argument('--disable-blink-features=AutomationControlled')
+self.page = Chromium(co)
+self.tab = self.page.latest_tab
+self.tab.run_js('Object.defineProperties(navigator, {webdriver: {get: () => undefined}});')
+
+
+
