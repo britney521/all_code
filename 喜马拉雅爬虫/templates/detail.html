@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+  <!-- 顶部操作栏 -->
+  <div class="bg-white rounded-lg shadow-header card-shadow p-4 mb-6 flex items-center justify-between">
+    <a href="javascript:history.back()" class="text-primary hover:underline flex items-center">
+      <i class="fa fa-arrow-left mr-2"></i>返回榜单
+    </a>
+    <h1 class="text-xl font-bold text-dark" id="album-title">{{ title }} - 日播放量增长</h1>
+    <button onclick="refreshChart()" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all">
+      <i class="fa fa-refresh"></i><span>刷新数据</span>
+    </button>
+  </div>
+
+  <!-- 图表卡片 -->
+  <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
+    <div id="dailyChart" style="height: 400px;"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+    {% block js %}
+<!-- ECharts CDN -->
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+<script>
+/* ====== 模拟数据接口（你可换成 /api/detail?id=xxx） ====== */
+async function fetchDailyData() {
+  return fetch(`/api/detail/daily?id={{ id }}`).then(res => res.json())
+
+}
+
+/* ====== 绘制图表 ====== */
+async function drawChart() {
+  const { dates, plays } = await fetchDailyData();
+  const shortPlay = v => {
+    if (v >= 1e8) return (v / 1e8).toFixed(1) + '亿';
+    if (v >= 1e7) return (v / 1e7).toFixed(1) + '千万';
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + '百万';
+    if (v >= 1e5) return (v / 1e5).toFixed(1) + '十万';
+    if (v >= 1e4) return (v / 1e4).toFixed(1) + '万';
+    return v.toString();
+  };
+
+  const myChart = echarts.init(document.getElementById('dailyChart'), null, {
+    backgroundColor: '#FAF8F5'          // 淡米白全局背景
+  });
+
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(255,255,255,.95)',
+      borderColor: '#FF9F45',            // 暖橙边框
+      borderWidth: 1,
+      textStyle: { color: '#2F3542' },
+      formatter: params => {
+        const raw = params[0].value;
+        return `<div class="text-sm">${params[0].name}</div>
+                <div class="font-bold">播放量 +${raw.toLocaleString()}（${shortPlay(raw)}）</div>`;
+      }
+    },
+    grid: { left: 100, right: 30, top: 40, bottom: 40 },
+    xAxis: {
+      type: 'category',
+      data: dates,
+      axisLine: { lineStyle: { color: '#DADCE0' } },
+      axisTick: { show: false },
+      axisLabel: { color: '#2F3542' }
+    },
+    yAxis: {
+      type: 'value',
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: '#E7EAEC' } },
+      axisLabel: { color: '#2F3542', formatter: v => shortPlay(v) }
+    },
+    series: [{
+      name: '日播放量',
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 8,
+      lineStyle: {
+        width: 3,
+        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+          { offset: 0, color: '#6A7DBB' },   // 雾霾蓝
+          { offset: 1, color: '#9B6AEC' }    // 柔雾紫
+        ])
+      },
+      itemStyle: {
+        color: '#9B6AEC',
+        borderColor: '#FFF',
+        borderWidth: 2
+      },
+      emphasis: {                            // hover 高亮
+        itemStyle: { color: '#FF9F45' }     // 暖橙
+      },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(154, 120, 236, 0.25)' },
+          { offset: 1, color: 'rgba(154, 120, 236, 0.01)' }
+        ])
+      },
+      data: plays
+    }]
+  };
+
+  myChart.setOption(option);
+  window.addEventListener('resize', () => myChart.resize());
+}
+
+/* 刷新按钮 */
+function refreshChart() {
+  echarts.getInstanceByDom(document.getElementById('dailyChart')).dispose();
+  drawChart();
+}
+
+/* 页面加载完成后渲染 */
+document.addEventListener('DOMContentLoaded', drawChart);
+</script>
+  {% endblock %}

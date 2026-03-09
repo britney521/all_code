@@ -1,0 +1,5 @@
+pyinstaller -D app2.py
+  --add-data=templates;templates
+  --add-data=static;static
+  --add-data=ximalaya_novels.db;.
+  --name HimalayaRank

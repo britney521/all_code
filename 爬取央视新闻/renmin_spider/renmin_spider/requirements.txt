@@ -1,0 +1,9 @@
+fake_useragent==0.1.11
+itemadapter==0.3.0
+matplotlib==3.5.1
+PyMySQL==1.0.2
+python_dateutil==2.8.2
+requests==2.26.0
+Scrapy==2.5.0
+SQLAlchemy==1.4.36
+urllib3==1.26.6

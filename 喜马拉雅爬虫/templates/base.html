@@ -1,0 +1,158 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喜马拉雅排行榜</title>
+    <script src="{{ url_for('static', filename='js/tailwind.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                        up: '#F53F3F',
+                        down: '#00B42A',
+                        'rating-high': '#00B42A',
+                        'rating-medium': '#FF7D00',
+                        'rating-low': '#F53F3F',
+                        'group-bg': '#F0F5FF', // 数据组背景色
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'header': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .hover-scale {
+                transition: transform 0.3s ease;
+            }
+
+            .hover-scale:hover {
+                transform: translateY(-2px);
+            }
+
+            .table-hover-row:hover {
+                background-color: rgba(22, 93, 255, 0.05);
+            }
+
+            .search-highlight {
+                background-color: #FFF9C4;
+                padding: 0 2px;
+                border-radius: 2px;
+            }
+
+            .half-gap {
+                gap: 0.5rem;
+            }
+
+            .conversion-rate {
+                display: inline-block;
+                padding: 0.1rem 0.3rem;
+                border-radius: 0.25rem;
+            }
+
+            .conversion-high {
+                background-color: rgba(0, 180, 42, 0.1);
+                color: #00B42A;
+            }
+
+            .conversion-low {
+                background-color: rgba(245, 63, 63, 0.1);
+                color: #F53F3F;
+            }
+
+            .data-group {
+                background-color: #F0F5FF;
+                border-radius: 6px;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+
+    <style>
+        /* 折叠状态：高度为 0 并隐藏 */
+        .collapse-content.collapsed {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        /* 展开状态：给一个足够大的高度即可 */
+        .collapse-content:not(.collapsed) {
+            max-height: 500px; /* 只要能撑开内容即可，可改更大 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter text-dark">
+    {% block content %}
+  {% endblock %}
+
+    <!-- 页脚 -->
+<footer class="bg-dark text-white py-8 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <div class="flex items-center space-x-2">
+                    <i class="fa fa-headphones text-primary text-xl"></i>
+                    <span class="text-lg font-semibold">喜马拉雅排行榜</span>
+                </div>
+                <p class="text-gray-400 text-sm mt-2">每天13:31准时更新</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa fa-weibo text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa fa-wechat text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa fa-twitter text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa fa-instagram text-xl"></i>
+                </a>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-6 pt-6 text-center text-gray-500 text-sm">
+            <p>© 2025 喜马拉雅排行榜 版权所有</p>
+        </div>
+    </div>
+</footer>
+
+
+    {% block js %}
+  {% endblock %}
+
+</body>
+</html>
